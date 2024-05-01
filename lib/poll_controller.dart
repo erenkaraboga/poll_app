@@ -18,21 +18,30 @@ class PollController extends GetxController {
   var questionList = <Question>[].obs;
   final selectedValue = Rxn<String?>();
   var isValid = false.obs;
-  addTextQuestion() {
-    var model = Question(type: "TEXT");
+
+  addQuestion(String type) {
+    var model = Question();
+    if(type == "TEXT"){
+       model = Question(type: "TEXT");
+    }
+    else if(type == "CHECKBOX"){
+      model = Question(type: "CHECKBOX");
+    }
+
     questionList.add(model);
     checkPollForValid();
   }
   updateTextQuestion(Question question,int index) {
     questionList[index] = question;
     checkPollForValid();
-
+    questionList.forEach((element) {
+      print(element.title);
+      print(element.options.toString());
+    });
   }
-
 
   checkPollForValid() {
     bool isValidPoll = true;
-
     for (var element in questionList) {
       if (element.title == null || element.title == "") {
         isValidPoll = false;
@@ -58,23 +67,27 @@ class PollController extends GetxController {
     );
     if (response.statusCode == 201) {
       print(response.body.toString());
-      Get.showSnackbar(
-        GetSnackBar(
-          title: response.body.toString(),
-          message: 'Anket Başarıyla Oluşturuldu',
-          icon: const Icon(Icons.add),
-          duration: const Duration(seconds: 3),
-          mainButton: TextButton(
-            child: Text('Kopyala'),
-            onPressed: () {
-              // Implement your action here
-            },
-          ),
-        ),
-      );
+      showSnackBar(response);
       print('Question sent successfully');
     } else {
       print('Failed to send question: ${response.reasonPhrase}');
     }
+  }
+
+  showSnackBar(http.Response response){
+    Get.showSnackbar(
+      GetSnackBar(
+        title: response.body.toString(),
+        message: 'Anket Başarıyla Oluşturuldu',
+        icon: const Icon(Icons.add),
+        duration: const Duration(seconds: 3),
+        mainButton: TextButton(
+          child: Text('Kopyala'),
+          onPressed: () {
+            // Implement your action here
+          },
+        ),
+      ),
+    );
   }
 }

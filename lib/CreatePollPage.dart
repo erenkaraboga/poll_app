@@ -2,6 +2,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:poll_app/poll_controller.dart';
+import 'package:poll_app/questions/checkbox.dart';
 import 'package:poll_app/questions/text.dart';
 
 class CreatePollPage extends StatefulWidget {
@@ -94,6 +95,9 @@ class _CreatePollPageState extends State<CreatePollPage> {
       return TextInputItem(
         question: c.questionList[index], index: index, isCreated: false,);
     }
+    else if(c.questionList[index].type == "CHECKBOX"){
+      return CheckboxList(question: c.questionList[index], index: index);
+    }
   }
 
   dropdown() {
@@ -133,7 +137,10 @@ class _CreatePollPageState extends State<CreatePollPage> {
         value: c.selectedValue.value,
         onChanged: (value) {
           if (value == "Text Input") {
-            c.addTextQuestion();
+            c.addQuestion("TEXT");
+          }
+          else if(value == "Multiple Choice"){
+            c.addQuestion("CHECKBOX");
           }
           c.selectedValue.value = value;
         },
