@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-
 import '../models/TextQuestionModel.dart';
 import '../poll_controller.dart';
 
-class CheckboxList extends StatefulWidget {
+class RadioButtonList extends StatefulWidget {
   final Question question;
   final int index;
 
-  const CheckboxList({super.key, required this.question, required this.index});
+  const RadioButtonList({Key? key, required this.question, required this.index}) : super(key: key);
+
   @override
-  _CheckboxListState createState() => _CheckboxListState();
+  _RadioButtonListState createState() => _RadioButtonListState();
 }
 
-class _CheckboxListState extends State<CheckboxList> {
+class _RadioButtonListState extends State<RadioButtonList> {
   var titleController = TextEditingController();
   List<String> items = [];
+  String? selectedOption;
   List<String> lastOptions = [];
 
   @override
@@ -34,7 +34,7 @@ class _CheckboxListState extends State<CheckboxList> {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.blue,
+          color: Colors.red,
           border: Border.all(color: Colors.black),
           borderRadius: BorderRadius.circular(10),
         ),
@@ -59,51 +59,42 @@ class _CheckboxListState extends State<CheckboxList> {
                       hintText: 'Enter question title',
                     ),
                   ),
-                  Row(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Expanded(
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: items.length + 1,
-                          itemBuilder: (context, index) {
-                            if (index == items.length) {
-                              // Son öğe, yani artı butonu
-                              return Padding(
-                                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                                child: ElevatedButton(
-                                  onPressed: _addCheckbox,
-                                  child: Text('Add Checkbox'),
-                                ),
-                              );
-                            }
-                            return Row(
-                              children: [
-                                Expanded(
-                                  child: CheckboxListTile(
-                                    title: Text(items[index]),
-                                    contentPadding: EdgeInsets.zero,
-                                    value: false,
-                                    onChanged: (newValue) {},
-                                  ),
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.delete),
-                                  onPressed: () {
-                                    setState(() {
-                                      items.removeAt(index);
-                                      lastOptions.removeAt(index);
-                                      var updated = widget.question.copyWith(title: titleController.text, options: lastOptions);
-                                      c.updateTextQuestion(updated, widget.index);
-                                    });
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                    ],
+                    children: items.asMap().entries.map((entry) {
+                      int index = entry.key;
+                      String item = entry.value;
+                      return Row(
+                        children: [
+                          Text(item),
+                          Spacer(),
+                          Radio<String>(
+                            value: item,
+                            groupValue: selectedOption,
+                            onChanged: null, // Pasif hale getirildi
+                          ),
+
+                          IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () {
+                              setState(() {
+                                items.removeAt(index);
+                                lastOptions.removeAt(index); // Öğenin kendi lastOptions listesinden de sil
+                                var updated = widget.question.copyWith(title: titleController.text, options: lastOptions);
+                                c.updateTextQuestion(updated, widget.index);
+                              });
+                            },
+                          ),
+                        ],
+                      );
+                    }).toList(),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                    child: ElevatedButton(
+                      onPressed: _addRadioButton,
+                      child: Text('Add Radio Button'),
+                    ),
                   ),
                 ],
               ),
@@ -114,16 +105,16 @@ class _CheckboxListState extends State<CheckboxList> {
     );
   }
 
-  void _addCheckbox() {
+  void _addRadioButton() {
     TextEditingController _controller = TextEditingController();
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Add Checkbox"),
+          title: Text("Add Radio Button"),
           content: TextField(
             controller: _controller,
-            decoration: InputDecoration(labelText: 'Checkbox Name'),
+            decoration: InputDecoration(labelText: 'Button Name'),
           ),
           actions: <Widget>[
             ElevatedButton(

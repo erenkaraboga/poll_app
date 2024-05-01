@@ -27,6 +27,9 @@ class PollController extends GetxController {
     else if(type == "CHECKBOX"){
       model = Question(type: "CHECKBOX");
     }
+    else if(type == "RADIO"){
+      model = Question(type: "RADIO");
+    }
 
     questionList.add(model);
     checkPollForValid();

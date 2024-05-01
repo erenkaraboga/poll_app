@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:poll_app/poll_controller.dart';
 import 'package:poll_app/questions/checkbox.dart';
+import 'package:poll_app/questions/radio.dart';
 import 'package:poll_app/questions/text.dart';
 
 class CreatePollPage extends StatefulWidget {
@@ -98,6 +99,9 @@ class _CreatePollPageState extends State<CreatePollPage> {
     else if(c.questionList[index].type == "CHECKBOX"){
       return CheckboxList(question: c.questionList[index], index: index);
     }
+    else if(c.questionList[index].type == "RADIO"){
+      return RadioButtonList(question: c.questionList[index], index: index);
+    }
   }
 
   dropdown() {
@@ -141,6 +145,9 @@ class _CreatePollPageState extends State<CreatePollPage> {
           }
           else if(value == "Multiple Choice"){
             c.addQuestion("CHECKBOX");
+          }
+          else if(value=="Single Choice"){
+            c.addQuestion("RADIO");
           }
           c.selectedValue.value = value;
         },
