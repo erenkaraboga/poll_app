@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -8,16 +10,17 @@ import '../models/TextQuestionModel.dart';
 import '../poll_controller.dart';
 
 
-class TextInputItem extends StatefulWidget {
-   TextInputItem({super.key, required this.question, required this.index });
+class TextInputItemAnswer extends StatefulWidget {
+  const TextInputItemAnswer({super.key, required this.question, required this.index, this.isCreated, });
   final Question question;
   final int index;
+  final isCreated;
 
   @override
-  State<TextInputItem> createState() => _TextInputItemState();
+  State<TextInputItemAnswer> createState() => _TextInputItemAnswerState();
 }
 
-class _TextInputItemState extends State<TextInputItem> {
+class _TextInputItemAnswerState extends State<TextInputItemAnswer> {
   var titleController = TextEditingController();
 
   var answerController = TextEditingController();
@@ -56,12 +59,11 @@ class _TextInputItemState extends State<TextInputItem> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(top: 10),
-                        child: TextField(decoration: InputDecoration(
+                        child: TextField(
+                            readOnly: true,
+                            decoration: InputDecoration(
                           hintText: 'Enter question title',
-                        ),controller: titleController,onChanged: (String value){
-                          var updated = widget.question.copyWith(title: titleController.text);
-                          c.updateTextQuestion(updated,widget.index);
-                        },)
+                        ),controller: titleController)
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 10,right: 20,bottom: 20),
@@ -70,8 +72,11 @@ class _TextInputItemState extends State<TextInputItem> {
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 5),
                             child: TextField(
-                              enabled: false,
-                              readOnly: true,
+                              onChanged: (String value){
+                              var updated = widget.question.copyWith(singleAnswer:answerController.text);
+                               c.answerQuestion(updated,widget.index);
+                              },
+                              enabled: !widget.isCreated,
                               decoration: InputDecoration(border: InputBorder.none,  hintText: 'Enter answer',),
                               controller: answerController,
                               maxLines: null, // Set to null to enable multiline input

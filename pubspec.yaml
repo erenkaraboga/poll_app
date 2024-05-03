@@ -39,6 +39,9 @@ dependencies:
   get: ^4.6.6
   dropdown_button2: ^2.3.9
   http: ^1.2.1
+  url_strategy: ^0.2.0
+  animated_text_kit: ^4.2.2
+  lottie: ^3.1.0
 
 dev_dependencies:
   flutter_test:
@@ -57,6 +60,8 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   uses-material-design: true
+  assets:
+    - assets/lottie/
   fonts:
     - family: Mali
       fonts:
@@ -72,10 +77,8 @@ flutter:
 
 
 
-    # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+
+
 
 
 

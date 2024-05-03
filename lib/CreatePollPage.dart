@@ -75,9 +75,12 @@ class _CreatePollPageState extends State<CreatePollPage> {
                     height: 10,
                   ),
                   Obx(() {
-                    return ElevatedButton(onPressed: c.isValid.value ? () async {
-                     await c.sendQuestion();
-
+                    return ElevatedButton(onPressed: c.isValidCreatePoll.value ? () async {
+                   var pollId = await c.sendQuestion();
+                    if(pollId !=""){
+                      print(pollId);
+                      showSuccessDialog(pollId);
+                    }
                     } : null, child:
                       Text("Save Poll", style: TextStyle(),)
                     );
@@ -94,7 +97,7 @@ class _CreatePollPageState extends State<CreatePollPage> {
   getBody(int index) {
     if (c.questionList[index].type == "TEXT") {
       return TextInputItem(
-        question: c.questionList[index], index: index, isCreated: false,);
+        question: c.questionList[index], index: index);
     }
     else if(c.questionList[index].type == "CHECKBOX"){
       return CheckboxList(question: c.questionList[index], index: index);
@@ -102,6 +105,35 @@ class _CreatePollPageState extends State<CreatePollPage> {
     else if(c.questionList[index].type == "RADIO"){
       return RadioButtonList(question: c.questionList[index], index: index);
     }
+  }
+  void showSuccessDialog(String id) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Poll Saved"),
+          actions: <Widget>[
+            ElevatedButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              child: Text("Add"),
+              onPressed: () {
+              var modified = id.replaceAll('"', '');
+
+              String url = "/solvePool/$modified";
+              print(url.toString());
+             Get.toNamed(url);
+
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   dropdown() {
