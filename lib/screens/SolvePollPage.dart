@@ -2,10 +2,11 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:poll_app/answers/checkbox.dart';
-import 'package:poll_app/answers/radio.dart';
-import 'package:poll_app/answers/text.dart';
-import 'package:poll_app/poll_controller.dart';
+
+import 'package:poll_app/controllers/poll_controller.dart';
+import 'package:poll_app/ui_components/answers/checkbox.dart';
+import 'package:poll_app/ui_components/answers/radio.dart';
+import 'package:poll_app/ui_components/answers/text.dart';
 
 
 class SolvePollPage extends StatefulWidget {

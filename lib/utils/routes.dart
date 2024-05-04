@@ -1,10 +1,10 @@
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:get/get_navigation/src/routes/route_middleware.dart';
-import 'package:get/get_navigation/src/routes/transitions_type.dart';
-import 'package:poll_app/CreatePollPage.dart';
-import 'package:poll_app/SolvePollPage.dart';
+import 'package:poll_app/screens/AdminLoginPage.dart';
+import 'package:poll_app/screens/CreatePollPage.dart';
+import 'package:poll_app/screens/SolvePollPage.dart';
 
-import '../HomePage.dart';
+import '../screens/HomePage.dart';
 
 appRoutes() => [
   GetPage(
@@ -19,9 +19,16 @@ appRoutes() => [
     middlewares: [RouteMiddleware()],
     transitionDuration: Duration(milliseconds: 500),
   ),
+
   GetPage(
     name: '/solvePool/:id',
     page: () => SolvePollPage(),
+    middlewares: [RouteMiddleware()],
+    transitionDuration: Duration(milliseconds: 500),
+  ),
+  GetPage(
+    name: '/admin',
+    page: () => AdminLoginPage(),
     middlewares: [RouteMiddleware()],
     transitionDuration: Duration(milliseconds: 500),
   ),

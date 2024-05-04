@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:lottie/lottie.dart';
-import 'package:poll_app/poll_controller.dart';
+import 'package:poll_app/controllers/poll_controller.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -55,6 +55,7 @@ class _HomePageState extends State<HomePage> {
                       FadeAnimatedText('Share Your Poll'),
                       FadeAnimatedText('Solve Poll'),
                       FadeAnimatedText('Get your polls answers'),
+                      FadeAnimatedText('%100 Anonymous'),
                     ],
                     onTap: () {
                       print("Tap Event");

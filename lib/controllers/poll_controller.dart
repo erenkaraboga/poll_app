@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:poll_app/models/TextQuestionModel.dart';
 
-import 'models/SolveRequestModel.dart';
+import '../models/SolveRequestModel.dart';
 
 class PollController extends GetxController {
   final List<String> selectableItems = [

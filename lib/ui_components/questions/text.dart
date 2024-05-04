@@ -4,8 +4,9 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
-import '../models/TextQuestionModel.dart';
-import '../poll_controller.dart';
+import '../../controllers/poll_controller.dart';
+import '../../models/TextQuestionModel.dart';
+
 
 
 class TextInputItem extends StatefulWidget {

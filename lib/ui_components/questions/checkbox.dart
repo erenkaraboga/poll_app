@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../models/TextQuestionModel.dart';
-import '../poll_controller.dart';
+import 'package:get/get_core/src/get_main.dart';
 
-class RadioButtonList extends StatefulWidget {
+import '../../controllers/poll_controller.dart';
+import '../../models/TextQuestionModel.dart';
+
+
+class CheckboxList extends StatefulWidget {
   final Question question;
   final int index;
 
-  const RadioButtonList({Key? key, required this.question, required this.index}) : super(key: key);
-
+  const CheckboxList({super.key, required this.question, required this.index});
   @override
-  _RadioButtonListState createState() => _RadioButtonListState();
+  _CheckboxListState createState() => _CheckboxListState();
 }
 
-class _RadioButtonListState extends State<RadioButtonList> {
+class _CheckboxListState extends State<CheckboxList> {
   var titleController = TextEditingController();
   List<String> items = [];
-  String? selectedOption;
   List<String> lastOptions = [];
 
   @override
@@ -34,7 +35,7 @@ class _RadioButtonListState extends State<RadioButtonList> {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.red,
+          color: Colors.blue,
           border: Border.all(color: Colors.black),
           borderRadius: BorderRadius.circular(10),
         ),
@@ -59,42 +60,51 @@ class _RadioButtonListState extends State<RadioButtonList> {
                       hintText: 'Enter question title',
                     ),
                   ),
-                  Column(
+                  Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: items.asMap().entries.map((entry) {
-                      int index = entry.key;
-                      String item = entry.value;
-                      return Row(
-                        children: [
-                          Text(item),
-                          Spacer(),
-                          Radio<String>(
-                            value: item,
-                            groupValue: selectedOption,
-                            onChanged: null, // Pasif hale getirildi
-                          ),
-
-                          IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: () {
-                              setState(() {
-                                items.removeAt(index);
-                                lastOptions.removeAt(index); // Öğenin kendi lastOptions listesinden de sil
-                                var updated = widget.question.copyWith(title: titleController.text, options: lastOptions);
-                                c.updateTextQuestion(updated, widget.index);
-                              });
-                            },
-                          ),
-                        ],
-                      );
-                    }).toList(),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                    child: ElevatedButton(
-                      onPressed: _addRadioButton,
-                      child: Text('Add Radio Button'),
-                    ),
+                    children: <Widget>[
+                      Expanded(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: items.length + 1,
+                          itemBuilder: (context, index) {
+                            if (index == items.length) {
+                              // Son öğe, yani artı butonu
+                              return Padding(
+                                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                                child: ElevatedButton(
+                                  onPressed: _addCheckbox,
+                                  child: Text('Add Checkbox'),
+                                ),
+                              );
+                            }
+                            return Row(
+                              children: [
+                                Expanded(
+                                  child: CheckboxListTile(
+                                    title: Text(items[index]),
+                                    contentPadding: EdgeInsets.zero,
+                                    value: false,
+                                    onChanged: (newValue) {},
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.delete),
+                                  onPressed: () {
+                                    setState(() {
+                                      items.removeAt(index);
+                                      lastOptions.removeAt(index);
+                                      var updated = widget.question.copyWith(title: titleController.text, options: lastOptions);
+                                      c.updateTextQuestion(updated, widget.index);
+                                    });
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -105,16 +115,16 @@ class _RadioButtonListState extends State<RadioButtonList> {
     );
   }
 
-  void _addRadioButton() {
+  void _addCheckbox() {
     TextEditingController _controller = TextEditingController();
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Add Radio Button"),
+          title: Text("Add Checkbox"),
           content: TextField(
             controller: _controller,
-            decoration: InputDecoration(labelText: 'Button Name'),
+            decoration: InputDecoration(labelText: 'Checkbox Name'),
           ),
           actions: <Widget>[
             ElevatedButton(

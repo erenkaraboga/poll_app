@@ -1,10 +1,12 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:poll_app/poll_controller.dart';
-import 'package:poll_app/questions/checkbox.dart';
-import 'package:poll_app/questions/radio.dart';
-import 'package:poll_app/questions/text.dart';
+import 'package:lottie/lottie.dart';
+import 'package:poll_app/controllers/poll_controller.dart';
+import 'package:flutter/services.dart';
+import 'package:poll_app/ui_components/questions/checkbox.dart';
+import 'package:poll_app/ui_components/questions/radio.dart';
+import 'package:poll_app/ui_components/questions/text.dart';
 
 class CreatePollPage extends StatefulWidget {
   CreatePollPage({super.key});
@@ -18,11 +20,17 @@ class _CreatePollPageState extends State<CreatePollPage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
-          title: const Text(
-            "Create Poll",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          title: GestureDetector(
+            onTap: (){
+              showSuccessDialog("41241241241241");
+            },
+            child: const Text(
+              "Create Poll",
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+            ),
           ),
           backgroundColor: Colors.black),
       body: Padding(
@@ -107,33 +115,32 @@ class _CreatePollPageState extends State<CreatePollPage> {
     }
   }
   void showSuccessDialog(String id) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Poll Saved"),
-          actions: <Widget>[
-            ElevatedButton(
-              child: Text("Cancel"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            ElevatedButton(
-              child: Text("Add"),
-              onPressed: () {
+    Get.defaultDialog(
+        barrierDismissible: false,
+        title: "Your Poll is Saved",content:  Column(
+      children: [
+        Text("Here's your sharing id !"),
+        SizedBox(height: 5,),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+          Text(id.toString(),style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
+            SizedBox(width: 20,),
+            ElevatedButton(onPressed: () async {
               var modified = id.replaceAll('"', '');
+              await Clipboard.setData(ClipboardData(text: modified));
+            }, child: Text("Copy"),style: ElevatedButton.styleFrom(backgroundColor: Colors.black),)
+        ],),
 
-              String url = "/solvePool/$modified";
-              print(url.toString());
-             Get.toNamed(url);
-
-              },
-            ),
-          ],
-        );
-      },
-    );
+        SizedBox(height: 5,),
+        Text("You can share your survey with your friends below."),
+        SizedBox(height: 5,),
+        ElevatedButton(onPressed: () async {
+          Get.offAllNamed("/home");
+        }, child: Text("Return Home"),style: ElevatedButton.styleFrom(backgroundColor: Colors.black),),
+      ],
+    ));
   }
 
   dropdown() {

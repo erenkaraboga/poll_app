@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../models/TextQuestionModel.dart';
-import '../poll_controller.dart';
+
+import '../../controllers/poll_controller.dart';
+import '../../models/TextQuestionModel.dart';
+
 
 class RadioButtonListAnswer extends StatefulWidget {
   final Question question;
