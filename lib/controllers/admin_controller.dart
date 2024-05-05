@@ -18,7 +18,7 @@ class AdminController extends GetxController {
   var questionList = <Question>[].obs;
   final selectedValue = Rxn<String?>();
   var isValidCreatePoll = false.obs;
-  var visitorsCount = 0.obs;
+  var visitorsCount = 0.0.obs;
   final box = GetStorage();
   var userName = "".obs;
   var password = "".obs;
@@ -26,6 +26,9 @@ class AdminController extends GetxController {
   var isLoading = false.obs;
   var isLogined = false.obs;
   var pollCount = 0.0.obs;
+  var answeredUserCount = 0.obs;
+  var pollsFiltered = <Polls>[].obs;
+  var search = "".obs;
 
    checkForm(){
      isFormValid.value = userName.isNotEmpty && password.isNotEmpty;
@@ -97,10 +100,52 @@ class AdminController extends GetxController {
 
       var model = PollsResponseModel.fromJson(json.decode(response.body));
        pollResponseModel.value = model;
+       pollsFiltered.value = pollResponseModel.value.polls ?? [];
       pollCount.value = pollResponseModel.value.polls?.length.toDouble() ??0.0;
+      getAnsweredUserCount();
     } else {
       print('Failed to send question: ${response.reasonPhrase}');
     }
+  }
+  Future<String> deletePoll(String pollId) async {
+    var url = "http://192.168.1.104:3000/api/poll/$pollId";
+    var response = await http.delete(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      print(response.body.toString());
+      print('Question sent successfully');
+      await getAllPolls();
+      return response.body;
+    } else {
+      print('Failed to send question: ${response.reasonPhrase}');
+      return "";
+    }
+  }
+  Future<void> getVisitors() async {
+    var url = "http://192.168.1.104:3000/visitors";
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      var jsonModel = json.decode(response.body);
+      visitorsCount.value = jsonModel["count"].toDouble() ??0.0;
+      print(jsonModel["count"]);
+      print(response.body.toString());
+    } else {
+      print('Failed to send question: ${response.reasonPhrase}');
+    }
+  }
+  getAnsweredUserCount(){
+     pollResponseModel.value.polls?.forEach((element) {
+       answeredUserCount.value += element.userAnswers?.length ?? 0;
+     });
   }
 
   showSnackBar(http.Response response){

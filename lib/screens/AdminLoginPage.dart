@@ -10,6 +10,9 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:poll_app/controllers/admin_controller.dart';
 import 'package:poll_app/utils/extensions.dart';
+
+import '../models/PollResponseModel.dart';
+
 class AdminLoginPage extends StatefulWidget {
   const AdminLoginPage({super.key});
 
@@ -18,17 +21,21 @@ class AdminLoginPage extends StatefulWidget {
 }
 
 class _AdminLoginPageState extends State<AdminLoginPage> {
-  final DataTableSource _data = TableData();
+  final key = GlobalKey<PaginatedDataTableState>();
+
   TextEditingController userNameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  String _searchResult = '';
 
   @override
   void initState() {
     c.checkLogin();
+    c.getVisitors();
     super.initState();
   }
 
   final AdminController c = Get.put(AdminController());
+  TextEditingController controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -36,85 +43,118 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
       return Scaffold(
           appBar: c.isLogined.value
               ? PreferredSize(
-                  preferredSize: Size.fromHeight(100),
-                  child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(0),
-                      ),
-                      color: Colors.white,
-                      elevation: 5,
-                      child: Container(
-                        height: 60,
-                        child: Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Image.asset(
-                                "assets/images/ic_admin_dark.png",
-                                height: 75,
-                                width: 75,
-                              ),
-                            ),
-                            Expanded(
-                                child: Center(
-                                    child: Text(
-                              "Admin",
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.bold),
-                            ))),
-                          ],
+              preferredSize: Size.fromHeight(100),
+              child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(0),
+                  ),
+                  color: Colors.white,
+                  elevation: 5,
+                  child: Container(
+                    height: 60,
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Image.asset(
+                            "assets/images/ic_admin_dark.png",
+                            height: 75,
+                            width: 75,
+                          ),
                         ),
-                      )))
+                        Expanded(
+                            child: Center(
+                                child: Text(
+                                  "Admin",
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 40,
+                                      fontWeight: FontWeight.bold),
+                                ))),
+                      ],
+                    ),
+                  )))
               : PreferredSize(
-                  preferredSize: Size.fromHeight(100), child: SizedBox()),
+              preferredSize: Size.fromHeight(100), child: SizedBox()),
           backgroundColor: Color(0xffF5F5F9),
           body: Obx(() {
             return c.isLogined.value
                 ? SingleChildScrollView(
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        SizedBox(
-                          height: 20,
-                        ),
-                        staticsHeader(),
-                        FutureBuilder(
-                            future: c.getAllPolls(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Center(
-                                    child: Lottie.asset(
-                                        "assets/lottie/lottie2.json",
-                                        frameRate: FrameRate.max));
-                              } else if (snapshot.hasError) {
-                                return Center(
-                                  child: Text('Error: ${snapshot.error}'),
-                                );
-                              } else {
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 150,vertical: 10),
-                                  child: Card(
-                                     elevation: 20,
-                                    child: PaginatedDataTable(
-                                      header: Center(child: Text("Polls On Active"),),
-                                        columnSpacing: 40,
-                                        columns: [
-                                          DataColumn(label: Text("Create Date")),
-                                          DataColumn(label: Text("id")),
-                                          DataColumn(label: Text("Answer Count")),
-                                          DataColumn(label: Text("Action")),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(
+                    height: 20,
+                  ),
+                  staticsHeader(),
+                  FutureBuilder(
+                      future: c.getAllPolls(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(
+                              child: Lottie.asset(
+                                  "assets/lottie/lottie2.json",
+                                  frameRate: FrameRate.max));
+                        } else if (snapshot.hasError) {
+                          return Center(
+                            child: Text('Error: ${snapshot.error}'),
+                          );
+                        } else {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 150, vertical: 10),
+                            child: Card(
+                              elevation: 20,
+                              child: Obx(() {
+                                return PaginatedDataTable(
+                                  key: key,
+                                    header: Row(
+                                      children: [
+                                        Container(
 
-                                    ], source: _data),
-                                  ),
-                                );
-                              }
-                            }),
-                      ],
-                    ),
-                )
+                                            child: Center(child: Text(
+                                              "Polls On Active",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight
+                                                      .bold),))),
+                                        Spacer(),
+                                        Container(
+                                            width: 210,
+                                            height: 50,
+                                            child: TextField(
+                                              onChanged: (String value) {
+                                                _searchResult = value;
+                                                c.pollsFiltered.value =
+                                                    c.pollResponseModel.value
+                                                        .polls!
+                                                        .where((poll) =>
+                                                    poll.sId?.contains(
+                                                        _searchResult) ?? false)
+                                                        .toList();
+                                                key.currentState?.pageTo(0);
+                                              },
+                                              style: TextStyle(),
+                                              decoration: InputDecoration(
+                                                  hintText: "Search"),))
+                                      ],
+                                    ),
+                                    columnSpacing: 40,
+                                    columns: [
+                                      DataColumn(label: Text("Create Date")),
+                                      DataColumn(label: Text("id")),
+                                      DataColumn(label: Text("Answer Count")),
+                                      DataColumn(label: Text("Action")),
+
+                                    ], source: TableData(c.pollsFiltered.value));
+                              }),
+                            ),
+                          );
+                        }
+                      }),
+                ],
+              ),
+            )
                 : Center(child: getLoginBody(),);
           }));
     });
@@ -141,7 +181,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                     Countup(
                       begin: 0,
                       end: c.pollCount.value,
-                      duration: Duration(seconds: 3),
+                      duration: Duration(milliseconds: 200),
                       separator: ',',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -167,8 +207,8 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                   children: [
                     Countup(
                       begin: 0,
-                      end: 750,
-                      duration: Duration(seconds: 3),
+                      end: c.pollCount.value,
+                      duration: Duration(milliseconds: 200),
                       separator: ',',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -194,8 +234,8 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                   children: [
                     Countup(
                       begin: 0,
-                      end: 750,
-                      duration: Duration(seconds: 3),
+                      end: c.visitorsCount.value,
+                      duration: Duration(milliseconds: 200),
                       separator: ',',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -238,9 +278,9 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
               ),
               child: Center(
                   child: Text(
-                "PLEASE ENTER YOUR LOGIN DETAILS",
-                style: TextStyle(color: Colors.white),
-              )),
+                    "PLEASE ENTER YOUR LOGIN DETAILS",
+                    style: TextStyle(color: Colors.white),
+                  )),
             ),
             Container(
               width: 300,
@@ -297,33 +337,33 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                       ),
                       Expanded(
                           child: GestureDetector(
-                        onTap: c.isFormValid.value
-                            ? () async {
-                                await c.login();
-                              }
-                            : null,
-                        child: Container(
-                          child: Center(
-                              child: !c.isLoading.value
-                                  ? Text(
-                                      "Login",
-                                      style: TextStyle(
-                                          color: c.isFormValid.value
-                                              ? Colors.white
-                                              : Colors.grey,
-                                          fontWeight: FontWeight.bold),
-                                    )
-                                  : SizedBox(
+                            onTap: c.isFormValid.value
+                                ? () async {
+                              await c.login();
+                            }
+                                : null,
+                            child: Container(
+                              child: Center(
+                                  child: !c.isLoading.value
+                                      ? Text(
+                                    "Login",
+                                    style: TextStyle(
+                                        color: c.isFormValid.value
+                                            ? Colors.white
+                                            : Colors.grey,
+                                        fontWeight: FontWeight.bold),
+                                  )
+                                      : SizedBox(
                                       width: 20,
                                       height: 20,
                                       child: CircularProgressIndicator(
                                         color: Colors.white,
                                       ))),
-                          decoration: BoxDecoration(
-                              color: Colors.black54,
-                              borderRadius: BorderRadius.circular(10)),
-                        ),
-                      )),
+                              decoration: BoxDecoration(
+                                  color: Colors.black54,
+                                  borderRadius: BorderRadius.circular(10)),
+                            ),
+                          )),
                       SizedBox(
                         height: 15,
                       ),
@@ -337,27 +377,41 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
       ),
     );
   }
-  
- 
+
+
 }
-class TableData extends DataTableSource{
+
+class TableData extends DataTableSource {
+  final List<Polls>? polls;
+
+  TableData(this.polls);
+
   final AdminController c = Get.put(AdminController());
+
   @override
   DataRow? getRow(int index) {
-     return DataRow(cells: [
-       DataCell(Text(c.pollResponseModel.value.polls?[index].createdAt?.customDateFormat() ?? "")),
-       DataCell(Text(c.pollResponseModel.value.polls?[index].sId ?? "")),
-       DataCell(Text(c.pollResponseModel.value.polls?[index].userAnswers?.length.toString() ?? "")),
-       DataCell(Row(children: [
-         IconButton(icon :Icon(Icons.remove_red_eye),onPressed: () {
-           var modified = c.pollResponseModel.value.polls?[index].sId?.replaceAll('"', '');
-           String url = "/solvePool/$modified";
-           print(url.toString());
-           Get.toNamed(url);
-         },),
-         IconButton(icon :Icon(Icons.delete), onPressed: () {  },),
-       ],)),
-     ]);
+    return DataRow(cells: [
+      DataCell(Text(polls?[index].createdAt?.customDateFormat() ?? "")),
+      DataCell(Text(polls?[index].sId ?? "")),
+      DataCell(Text(polls?[index].userAnswers?.length.toString() ?? "")),
+      DataCell(Row(children: [
+        IconButton(icon: Icon(Icons.add), onPressed: () {
+          var modified = polls?[index].sId?.replaceAll('"', '');
+          String url = "/solvePool/$modified";
+          print(url.toString());
+          Get.toNamed(url);
+        },),
+        IconButton(icon: Icon(Icons.remove_red_eye), onPressed: () {
+          var modified = polls?[index].sId?.replaceAll('"', '');
+          String url = "/preview/$modified";
+          print(url.toString());
+          Get.toNamed(url);
+        },),
+        IconButton(icon: Icon(Icons.delete), onPressed: () {
+         c.deletePoll(polls?[index].sId ?? "");
+        },),
+      ],)),
+    ]);
   }
 
   @override
@@ -366,7 +420,7 @@ class TableData extends DataTableSource{
 
   @override
   // TODO: implement rowCount
-  int get rowCount => c.pollResponseModel.value.polls?.length ?? 0;
+  int get rowCount => polls?.length ?? 0;
 
   @override
   // TODO: implement selectedRowCount
