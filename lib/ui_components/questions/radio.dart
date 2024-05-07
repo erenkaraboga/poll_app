@@ -24,6 +24,7 @@ class _RadioButtonListState extends State<RadioButtonList> {
   void initState() {
     titleController.text = widget.question.title ?? "";
     lastOptions = List.from(widget.question.options ?? []);
+    items = List.from(widget.question.options ?? []);
     super.initState();
   }
 

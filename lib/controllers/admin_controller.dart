@@ -26,9 +26,10 @@ class AdminController extends GetxController {
   var isLoading = false.obs;
   var isLogined = false.obs;
   var pollCount = 0.0.obs;
-  var answeredUserCount = 0.obs;
+  var answeredUserCount = 0.0.obs;
   var pollsFiltered = <Polls>[].obs;
   var search = "".obs;
+
 
    checkForm(){
      isFormValid.value = userName.isNotEmpty && password.isNotEmpty;
@@ -44,7 +45,7 @@ class AdminController extends GetxController {
     };
 
 
-    var url = "http://192.168.1.104:3000/api/adminLogin";
+    var url = "http://192.168.1.102:3000/api/adminLogin";
 
     var response = await http.post(
       Uri.parse(url),
@@ -85,7 +86,7 @@ class AdminController extends GetxController {
     }
   }
   Future<void> getAllPolls() async {
-    var url = "http://192.168.1.104:3000/api/polls";
+    var url = "http://192.168.1.102:3000/api/polls";
     var response = await http.get(
       Uri.parse(url),
       headers: <String, String>{
@@ -108,7 +109,7 @@ class AdminController extends GetxController {
     }
   }
   Future<String> deletePoll(String pollId) async {
-    var url = "http://192.168.1.104:3000/api/poll/$pollId";
+    var url = "http://192.168.1.102:3000/api/poll/$pollId";
     var response = await http.delete(
       Uri.parse(url),
       headers: <String, String>{
@@ -126,7 +127,7 @@ class AdminController extends GetxController {
     }
   }
   Future<void> getVisitors() async {
-    var url = "http://192.168.1.104:3000/visitors";
+    var url = "http://192.168.1.102:3000/visitors";
     var response = await http.get(
       Uri.parse(url),
       headers: <String, String>{
@@ -143,9 +144,12 @@ class AdminController extends GetxController {
     }
   }
   getAnsweredUserCount(){
-     pollResponseModel.value.polls?.forEach((element) {
-       answeredUserCount.value += element.userAnswers?.length ?? 0;
+     var x = pollResponseModel.value.polls;
+     var value  = 0.0;
+     x?.forEach((element) {
+       value += element.userAnswers?.length.toDouble() ?? 0.0;
      });
+     answeredUserCount.value = value;
   }
 
   showSnackBar(http.Response response){

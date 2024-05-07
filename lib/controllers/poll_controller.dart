@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:poll_app/models/TextQuestionModel.dart';
 
+import '../models/PollResponseModel.dart';
 import '../models/SolveRequestModel.dart';
 
 class PollController extends GetxController {
@@ -18,6 +19,7 @@ class PollController extends GetxController {
 
 
   var pollResponseModel = QuestionResponseModel().obs;
+  var pollResponseModelForGetAnswer = Polls().obs;
   var questionList = <Question>[].obs;
   final selectedValue = Rxn<String?>();
   var isValidCreatePoll = false.obs;
@@ -87,7 +89,7 @@ class PollController extends GetxController {
     var model = QuestionResponseModel(questions: questionList);
     String jsonModel = json.encode(model.toJson());
 
-    var url = "http://192.168.1.104:3000/api/poll";
+    var url = "http://192.168.1.102:3000/api/poll";
     print(jsonModel);
     var response = await http.post(
       Uri.parse(url),
@@ -114,7 +116,7 @@ class PollController extends GetxController {
     var model = SolveRequestModel(questions: pollResponseModel.value.questions);
     String jsonModel = json.encode(model.toJson());
 
-    var url = "http://192.168.1.104:3000/api/poll/$pollId/add-user";
+    var url = "http://192.168.1.102:3000/api/poll/$pollId/add-user";
     print(jsonModel);
     var response = await http.post(
       Uri.parse(url),
@@ -138,7 +140,7 @@ class PollController extends GetxController {
 
   Future<void> getPollById(String id) async {
     await Future.delayed(Duration(seconds: 2));
-    var url = "http://192.168.1.104:3000/api/poll/$id";
+    var url = "http://192.168.1.102:3000/api/poll/$id";
     var response = await http.get(
       Uri.parse(url),
       headers: <String, String>{
@@ -153,9 +155,27 @@ class PollController extends GetxController {
       print('Failed to send question: ${response.reasonPhrase}');
     }
   }
+  Future<void> getPollByIdForGetAnswer(String id) async {
+    await Future.delayed(Duration(seconds: 2));
+    var url = "http://192.168.1.102:3000/api/poll/$id";
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      print(response.body.toString());
+      var model = Polls.fromJson(json.decode(response.body));
+       pollResponseModelForGetAnswer.value = model;
+       print(model.sId);
+    } else {
+      print('Failed to send question: ${response.reasonPhrase}');
+    }
+  }
 
   Future<void> getVisitors() async {
-    var url = "http://192.168.1.104:3000/";
+    var url = "http://192.168.1.102:3000/";
     var response = await http.get(
       Uri.parse(url),
       headers: <String, String>{

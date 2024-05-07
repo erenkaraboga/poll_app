@@ -65,7 +65,10 @@ class _CreatePollPageState extends State<CreatePollPage> {
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 4),
-                                  child: Icon(Icons.delete),
+                                  child: IconButton(icon: Icon(Icons.delete),onPressed: (){
+                                    c.questionList.removeAt(index);
+
+                                  },),
                                 )
                               ]);
                         }),

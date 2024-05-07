@@ -207,7 +207,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                   children: [
                     Countup(
                       begin: 0,
-                      end: c.pollCount.value,
+                      end: c.answeredUserCount.value,
                       duration: Duration(milliseconds: 200),
                       separator: ',',
                       style: TextStyle(
@@ -395,17 +395,21 @@ class TableData extends DataTableSource {
       DataCell(Text(polls?[index].sId ?? "")),
       DataCell(Text(polls?[index].userAnswers?.length.toString() ?? "")),
       DataCell(Row(children: [
-        IconButton(icon: Icon(Icons.add), onPressed: () {
+        IconButton(icon: Icon(Icons.question_answer_outlined), onPressed: () {
+          showAnswers(index);
+        },),
+        IconButton(icon: Icon(Icons.add), onPressed: () async {
           var modified = polls?[index].sId?.replaceAll('"', '');
           String url = "/solvePool/$modified";
-          print(url.toString());
-          Get.toNamed(url);
+          await Get.toNamed(url);
+          c.getAllPolls();
         },),
-        IconButton(icon: Icon(Icons.remove_red_eye), onPressed: () {
+        IconButton(icon: Icon(Icons.remove_red_eye), onPressed: () async {
           var modified = polls?[index].sId?.replaceAll('"', '');
           String url = "/preview/$modified";
           print(url.toString());
           Get.toNamed(url);
+
         },),
         IconButton(icon: Icon(Icons.delete), onPressed: () {
          c.deletePoll(polls?[index].sId ?? "");
@@ -426,6 +430,23 @@ class TableData extends DataTableSource {
   // TODO: implement selectedRowCount
   int get selectedRowCount => 0;
 
+  void showAnswers(int index) {
+    var selectedPoll = polls?[index].userAnswers;
+    Get.defaultDialog(
+        barrierDismissible: true,
+        title: "Answer List",content: SingleChildScrollView(
+          child: Container(
+            width: 400,
+            height: 200,
+            child: ListView.builder(shrinkWrap: true,itemCount: polls?[index].userAnswers?.length,itemBuilder: (context , index){
+              return ListTile(trailing: IconButton(icon: Icon(Icons.remove_red_eye,),onPressed: (){
 
+                List<Answers>? list = selectedPoll?[index].answers;
+                Get.toNamed("/getAnswers",arguments:list);
+              },),title: Text(selectedPoll?[index].sId.toString() ?? ""),subtitle: Text(selectedPoll?[index].sId.toString() ?? ""),);
+                }),
+          ),
+        ));
+  }
 }
 

@@ -20,10 +20,14 @@ class _CheckboxListState extends State<CheckboxList> {
   List<String> items = [];
   List<String> lastOptions = [];
 
+
+
+
   @override
   void initState() {
     titleController.text = widget.question.title ?? "";
     lastOptions = List.from(widget.question.options ?? []);
+    items = List.from(widget.question.options ?? []);
     super.initState();
   }
 
