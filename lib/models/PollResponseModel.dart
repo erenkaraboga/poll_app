@@ -22,6 +22,7 @@ class PollsResponseModel {
 
 class Polls {
   String? sId;
+  String? imageUrl;
   List<Questions>? questions;
   String? createdAt;
   List<UserAnswers>? userAnswers;
@@ -31,6 +32,7 @@ class Polls {
 
   Polls.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
+    imageUrl = json['imageUrl'];
     if (json['questions'] != null) {
       questions = <Questions>[];
       json['questions'].forEach((v) {
@@ -50,6 +52,7 @@ class Polls {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['_id'] = this.sId;
+    data['imageUrl'] = this.imageUrl;
     if (this.questions != null) {
       data['questions'] = this.questions!.map((v) => v.toJson()).toList();
     }

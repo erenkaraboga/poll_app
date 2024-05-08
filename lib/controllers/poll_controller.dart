@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'dart:html';
+import 'dart:typed_data';
+import 'package:cloudinary/cloudinary.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
@@ -6,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:poll_app/models/TextQuestionModel.dart';
 
+import '../core/constants.dart';
 import '../models/PollResponseModel.dart';
 import '../models/SolveRequestModel.dart';
 
@@ -15,7 +19,8 @@ class PollController extends GetxController {
     'Single Choice',
     'Multiple Choice',
   ];
-
+  final cloudinary =
+  Cloudinary.signedConfig(apiKey: "225548188944398",apiSecret: "S0s1UsBPu3luxg5afZX_LyBNv-U",cloudName: "dinqa9wqr");
 
 
   var pollResponseModel = QuestionResponseModel().obs;
@@ -23,7 +28,9 @@ class PollController extends GetxController {
   var questionList = <Question>[].obs;
   final selectedValue = Rxn<String?>();
   var isValidCreatePoll = false.obs;
-  var visitorsCount = 0.obs;
+
+  var image = <int>[].obs;
+  var imageUrl = "".obs;
 
   addQuestion(String type) {
     var model = Question();
@@ -86,10 +93,10 @@ class PollController extends GetxController {
 
 
   Future<String> sendQuestion() async {
-    var model = QuestionResponseModel(questions: questionList);
+    var model = QuestionResponseModel(questions: questionList,imageUrl: imageUrl.value);
     String jsonModel = json.encode(model.toJson());
 
-    var url = "http://192.168.1.102:3000/api/poll";
+    var url = "${AppConstants.BASEURL}/api/poll";
     print(jsonModel);
     var response = await http.post(
       Uri.parse(url),
@@ -113,10 +120,10 @@ class PollController extends GetxController {
   }
 
   Future<String> sendAnswer(String pollId) async {
-    var model = SolveRequestModel(questions: pollResponseModel.value.questions);
+    var model = SolveRequestModel(questions: pollResponseModel.value.questions,);
     String jsonModel = json.encode(model.toJson());
 
-    var url = "http://192.168.1.102:3000/api/poll/$pollId/add-user";
+    var url = "${AppConstants.BASEURL}/api/poll/$pollId/add-user";
     print(jsonModel);
     var response = await http.post(
       Uri.parse(url),
@@ -140,7 +147,7 @@ class PollController extends GetxController {
 
   Future<void> getPollById(String id) async {
     await Future.delayed(Duration(seconds: 2));
-    var url = "http://192.168.1.102:3000/api/poll/$id";
+    var url = "${AppConstants.BASEURL}/api/poll/$id";
     var response = await http.get(
       Uri.parse(url),
       headers: <String, String>{
@@ -157,7 +164,7 @@ class PollController extends GetxController {
   }
   Future<void> getPollByIdForGetAnswer(String id) async {
     await Future.delayed(Duration(seconds: 2));
-    var url = "http://192.168.1.102:3000/api/poll/$id";
+    var url = "${AppConstants.BASEURL}/api/poll/$id";
     var response = await http.get(
       Uri.parse(url),
       headers: <String, String>{
@@ -174,25 +181,7 @@ class PollController extends GetxController {
     }
   }
 
-  Future<void> getVisitors() async {
-    var url = "http://192.168.1.102:3000/";
-    var response = await http.get(
-      Uri.parse(url),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    );
-    if (response.statusCode == 200) {
-      var jsonModel = json.decode(response.body);
-      visitorsCount.value = jsonModel["count"];
-      print(jsonModel["count"]);
-      print(response.body.toString());
-      var model = QuestionResponseModel.fromJson(json.decode(response.body));
-      pollResponseModel.value = model;
-    } else {
-      print('Failed to send question: ${response.reasonPhrase}');
-    }
-  }
+
 
 
   showSnackBar(http.Response response){
@@ -221,6 +210,21 @@ class PollController extends GetxController {
 
       ),
     );
+  }
+  Future<CloudinaryResponse?> uploadImage() async {
+      if(image.value.isNotEmpty){
+        final response = await cloudinary.upload(
+            fileBytes: image.value,
+            resourceType: CloudinaryResourceType.image,
+            folder: "/pool");
+        imageUrl.value = response.url ?? "";
+        return response;
+      }
+      else{
+        return null;
+      }
+
+
   }
 
 }

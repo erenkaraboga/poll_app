@@ -41,39 +41,44 @@ class _GetAnswersPageState extends State<GetAnswersPage> {
          Padding(
             padding: const EdgeInsets.all(20.0),
             child: SingleChildScrollView(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Column(
                 children: [
 
-                   Container(
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width / 2,
-                      decoration: BoxDecoration(
-                          color: Colors.black12,
-                          border: Border.all(color: Colors.black54),
-                          borderRadius: BorderRadius.circular(30)),
-                      child: list.isNotEmpty
-                          ? Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 20),
-                        child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: list.length,
-                            itemBuilder: (context, index) {
-                              return Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(child: getBody(index)),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
 
-                                  ]);
-                            }),
+                       Container(
+                          width: MediaQuery
+                              .of(context)
+                              .size
+                              .width / 2,
+                          decoration: BoxDecoration(
+                              color: Colors.black12,
+                              border: Border.all(color: Colors.black54),
+                              borderRadius: BorderRadius.circular(30)),
+                          child: list.isNotEmpty
+                              ? Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 20),
+                            child: ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: list.length,
+                                itemBuilder: (context, index) {
+                                  return Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(child: getBody(index)),
+
+                                      ]);
+                                }),
+                          )
+                              : SizedBox(),
+
                       )
-                          : SizedBox(),
-
-                  )
+                    ],
+                  ),
                 ],
               ),
             ),

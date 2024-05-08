@@ -1,11 +1,13 @@
 class QuestionResponseModel {
   String? id;
   List<Question>? questions;
+  String? imageUrl;
 
-  QuestionResponseModel({this.id, this.questions});
+  QuestionResponseModel({this.id, this.questions,this.imageUrl});
 
   QuestionResponseModel.fromJson(Map<String, dynamic> json) {
     id = json['_id'];
+    imageUrl = json['imageUrl'];
     if (json['questions'] != null) {
       questions = <Question>[];
       json['questions'].forEach((v) {
@@ -17,6 +19,7 @@ class QuestionResponseModel {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['_id'] = this.id;
+    data['imageUrl'] = this.imageUrl;
     if (this.questions != null) {
       data['questions'] = this.questions!.map((v) => v.toJson()).toList();
     }

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:poll_app/core/constants.dart';
 import 'package:poll_app/models/PollResponseModel.dart';
 import 'package:poll_app/models/TextQuestionModel.dart';
 import 'package:http/http.dart' as http;
@@ -45,7 +46,7 @@ class AdminController extends GetxController {
     };
 
 
-    var url = "http://192.168.1.102:3000/api/adminLogin";
+    var url = "${AppConstants.BASEURL}/api/adminLogin";
 
     var response = await http.post(
       Uri.parse(url),
@@ -86,7 +87,7 @@ class AdminController extends GetxController {
     }
   }
   Future<void> getAllPolls() async {
-    var url = "http://192.168.1.102:3000/api/polls";
+    var url = "${AppConstants.BASEURL}/api/polls";
     var response = await http.get(
       Uri.parse(url),
       headers: <String, String>{
@@ -109,7 +110,7 @@ class AdminController extends GetxController {
     }
   }
   Future<String> deletePoll(String pollId) async {
-    var url = "http://192.168.1.102:3000/api/poll/$pollId";
+    var url = "${AppConstants.BASEURL}/api/poll/$pollId";
     var response = await http.delete(
       Uri.parse(url),
       headers: <String, String>{
@@ -127,7 +128,7 @@ class AdminController extends GetxController {
     }
   }
   Future<void> getVisitors() async {
-    var url = "http://192.168.1.102:3000/visitors";
+    var url = "${AppConstants.BASEURL}/api/getVisitor";
     var response = await http.get(
       Uri.parse(url),
       headers: <String, String>{
@@ -143,6 +144,7 @@ class AdminController extends GetxController {
       print('Failed to send question: ${response.reasonPhrase}');
     }
   }
+
   getAnsweredUserCount(){
      var x = pollResponseModel.value.polls;
      var value  = 0.0;

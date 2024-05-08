@@ -51,41 +51,50 @@ class _PollPreviewPageState extends State<PollPreviewPage> {
           return  Padding(
             padding: const EdgeInsets.all(20.0),
             child: SingleChildScrollView(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Column(
                 children: [
-                  Obx(() {
-                    return Container(
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width / 2,
-                      decoration: BoxDecoration(
-                          color: Colors.black12,
-                          border: Border.all(color: Colors.black54),
-                          borderRadius: BorderRadius.circular(30)),
-                      child: c.pollResponseModel.value.questions!.isNotEmpty
-                          ? Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 20),
-                        child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: c.pollResponseModel.value.questions?.length,
-                            itemBuilder: (context, index) {
-                              return Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(child: getBody(index)),
+              c.pollResponseModel.value.imageUrl !="" && c.pollResponseModel.value.imageUrl!=null ?  Container(
+                      width: 400,
+                      height: 400,
+                      child: Image.network(c.pollResponseModel.value.imageUrl ?? "")): SizedBox(),
+                  SizedBox(height: 10,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Obx(() {
+                        return Container(
+                          width: MediaQuery
+                              .of(context)
+                              .size
+                              .width / 2,
+                          decoration: BoxDecoration(
+                              color: Colors.black12,
+                              border: Border.all(color: Colors.black54),
+                              borderRadius: BorderRadius.circular(30)),
+                          child: c.pollResponseModel.value.questions!.isNotEmpty
+                              ? Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 20),
+                            child: ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: c.pollResponseModel.value.questions?.length,
+                                itemBuilder: (context, index) {
+                                  return Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(child: getBody(index)),
 
-                                  ]);
-                            }),
-                      )
-                          : SizedBox(),
-                    );
-                  }),
+                                      ]);
+                                }),
+                          )
+                              : SizedBox(),
+                        );
+                      }),
 
 
+                    ],
+                  ),
                 ],
               ),
             ),

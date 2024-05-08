@@ -11,6 +11,7 @@ Future<void> main() async {
   await GetStorage.init();
   setPathUrlStrategy();
   runApp(MyApp());
+
 }
 
 class MyApp extends StatelessWidget {
@@ -26,4 +27,6 @@ class MyApp extends StatelessWidget {
       initialRoute: "/home",
     );
   }
+
 }
+
