@@ -33,7 +33,7 @@ class _GetAnswersPageState extends State<GetAnswersPage> {
     return Scaffold(
       appBar: AppBar(
           title: const Text(
-            "Solve Pool",
+            "Get Answer",
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
           ),
           backgroundColor: Colors.black),

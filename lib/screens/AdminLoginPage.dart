@@ -11,6 +11,7 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:poll_app/controllers/admin_controller.dart';
 import 'package:poll_app/utils/extensions.dart';
+import 'package:poll_app/utils/slugify.dart';
 
 import '../models/PollResponseModel.dart';
 
@@ -762,7 +763,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                 color: Colors.black, fontWeight: FontWeight.bold),),
             SizedBox(width: 20,),
             ElevatedButton(onPressed: () async {
-              var modified = recoveryId.replaceAll('"', '');
+              var modified = slug(recoveryId);
               await Clipboard.setData(ClipboardData(text: modified));
               c.isWantRegister.value = false;
               Navigator.pop(context);
@@ -797,13 +798,13 @@ class TableData extends DataTableSource {
           showAnswers(index);
         },),
         IconButton(icon: Icon(Icons.add), onPressed: () async {
-          var modified = polls?[index].sId?.replaceAll('"', '');
+          var modified = slug(polls?[index].sId ?? "");
           String url = "/solvePool/$modified";
           await Get.toNamed(url);
           c.getAllPolls();
         },),
         IconButton(icon: Icon(Icons.remove_red_eye), onPressed: () async {
-          var modified = polls?[index].sId?.replaceAll('"', '');
+          var modified =slug( polls?[index].sId ?? "");
           String url = "/preview/$modified";
           print(url.toString());
           Get.toNamed(url);

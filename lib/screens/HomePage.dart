@@ -106,40 +106,25 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(width: 20,),
                     InkWell(
                       onTap: () {
-                        Get.toNamed("/solvePool/6639c9d3881f49574229ab6b");
+                        showDialog();
                       },
                       child: Container(
                         decoration: BoxDecoration(
-                            color: Colors.white, borderRadius: BorderRadius
-                            .circular(10)),
-        
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10)),
+
                         child: Padding(
                           padding: const EdgeInsets.all(20.0),
-                          child: Text("Solve Poll", style: TextStyle(
+                          child: Text("Take Answers", style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 26,
                               color: Colors.black),),
                         ),),
                     ),
                   ],),
-                SizedBox(height: 20,),
-                InkWell(
-                  onTap: () {
-                    showDialog();
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10)),
-        
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Text("Take Answers", style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 26,
-                          color: Colors.black),),
-                    ),),
-                ),
+                SizedBox(height: 50,),
+
+
                 SizedBox(height: 200,),
                 Text("Images of Active Polls",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),),

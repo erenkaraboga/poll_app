@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:poll_app/ui_components/questions/checkbox.dart';
 import 'package:poll_app/ui_components/questions/radio.dart';
 import 'package:poll_app/ui_components/questions/text.dart';
+import 'package:poll_app/utils/slugify.dart';
 
 class CreatePollPage extends StatefulWidget {
   CreatePollPage({super.key});
@@ -178,7 +179,7 @@ class _CreatePollPageState extends State<CreatePollPage> {
                 color: Colors.black, fontWeight: FontWeight.bold),),
             SizedBox(width: 20,),
             ElevatedButton(onPressed: () async {
-              var modified = id.replaceAll('"', '');
+              var modified = slug(id);
               await Clipboard.setData(ClipboardData(text: modified));
             },
               child: Text("Copy"),
@@ -187,6 +188,19 @@ class _CreatePollPageState extends State<CreatePollPage> {
 
         SizedBox(height: 5,),
         Text("You can share your survey with your friends below."),
+
+        Row(
+          children: [
+            Text("http://localhost:56227/solvePool/${slug(id)}"),
+            SizedBox(width: 20,),
+            ElevatedButton(onPressed: () async {
+              var modified = slug("http://localhost:56227/solvePool/${slug(id)}");
+              await Clipboard.setData(ClipboardData(text: modified));
+            },
+              child: Text("Copy"),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.black),)
+          ],
+        ),
         SizedBox(height: 5,),
         ElevatedButton(onPressed: () async {
           Get.offAllNamed("/home");
