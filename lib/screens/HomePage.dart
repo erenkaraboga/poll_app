@@ -148,7 +148,7 @@ class _HomePageState extends State<HomePage> {
                   width: 600,
                   child: CarouselSlider(
                     options: CarouselOptions(height: 200,autoPlay: true,),
-                    items: cHome.images.value.map((i) {
+                    items: cHome.images.value.reversed.map((i) {
                       return Builder(
                         builder: (BuildContext context) {
                           return Container(

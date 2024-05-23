@@ -2,6 +2,7 @@ import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:countup/countup.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -25,6 +26,15 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
 
   TextEditingController userNameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  TextEditingController repasswordController = TextEditingController();
+  TextEditingController passwordControllerRegister = TextEditingController();
+  TextEditingController userNameControllerRegister = TextEditingController();
+
+  TextEditingController forgotpasswordController = TextEditingController();
+  TextEditingController recoveryKeyController = TextEditingController();
+  TextEditingController forgotuserNameController = TextEditingController();
+
   String _searchResult = '';
 
   @override
@@ -54,14 +64,20 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                     height: 60,
                     child: Row(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Image.asset(
-                            "assets/images/ic_admin_dark.png",
-                            height: 75,
-                            width: 75,
+                        GestureDetector(
+                          onTap: (){
+                            c.disconnect();
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Image.asset(
+                              "assets/images/ic_admin_dark.png",
+                              height: 75,
+                              width: 75,
+                            ),
                           ),
                         ),
+                        Text(c.authResponseModel.value.admin?.userName ?? "",style: TextStyle(fontWeight: FontWeight.bold),),
                         Expanded(
                             child: Center(
                                 child: Text(
@@ -108,7 +124,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                               elevation: 20,
                               child: Obx(() {
                                 return PaginatedDataTable(
-                                  key: key,
+                                    key: key,
                                     header: Row(
                                       children: [
                                         Container(
@@ -146,7 +162,8 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                                       DataColumn(label: Text("Answer Count")),
                                       DataColumn(label: Text("Action")),
 
-                                    ], source: TableData(c.pollsFiltered.value));
+                                    ],
+                                    source: TableData(c.pollsFiltered.value));
                               }),
                             ),
                           );
@@ -155,9 +172,19 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                 ],
               ),
             )
-                : Center(child: getLoginBody(),);
+                : Center(child: getBody());
           }));
     });
+  }
+  getBody(){
+    if(c.isWantRegister.value){
+      return getRegisterBody();
+    }else if(c.isWantForgot.value){
+      return getForgotPassBody();
+    }
+    else{
+      return getLoginBody();
+    }
   }
 
   staticsHeader() {
@@ -284,7 +311,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
             ),
             Container(
               width: 300,
-              height: 330,
+              height: 420,
               color: Color(0xff363740),
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
@@ -335,11 +362,24 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                       const SizedBox(
                         height: 20,
                       ),
+                      GestureDetector(
+                        onTap: (){
+                          c.isWantForgot.value = true;
+                        },
+                        child: Text("Forgot Password",
+                          style: TextStyle(color: Colors.white,
+                              decoration: TextDecoration.underline),),
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
                       Expanded(
                           child: GestureDetector(
                             onTap: c.isFormValid.value
                                 ? () async {
                               await c.login();
+                              passwordController.clear();
+                              userNameController.clear();
                             }
                                 : null,
                             child: Container(
@@ -367,6 +407,31 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                       SizedBox(
                         height: 15,
                       ),
+                      Row(
+                        children: [
+                          Obx(() => Checkbox(
+                              value: c.rememberMe.value,
+                              onChanged: (bool? newValue) {
+                                c.rememberMe.value = newValue!;
+                              })),
+                          Text(
+                            "Remember Me",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                   GestureDetector(
+                          onTap: (){
+                            c.isWantRegister.value = true;
+                          },
+                          child: Center(child: Text("or Sign Up",
+                            style: TextStyle(color: Colors.white,
+                                decoration: TextDecoration.underline),)),
+                        ),
+
                     ],
                   );
                 }),
@@ -378,7 +443,340 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
     );
   }
 
+  getRegisterBody() {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      elevation: 50,
+      color: Colors.black12,
+      child: Container(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 300,
+              height: 50,
+              decoration: BoxDecoration(
+                color: Color(0xff31313a),
+              ),
+              child: Center(
+                  child: Text(
+                    "PLEASE ENTER YOUR REGISTER DETAILS",
+                    style: TextStyle(color: Colors.white),
+                  )),
+            ),
+            Container(
+              width: 300,
+              height: 400,
+              color: Color(0xff363740),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                child: Obx(() {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Image.asset(
+                        "assets/images/ic_admin.png",
+                        width: 100,
+                        height: 100,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      TextField(
+                        onChanged: (String value) {
+                          c.userNameRegister.value = value;
+                          c.checkFormForRegister();
+                        },
+                        controller: userNameControllerRegister,
+                        style: TextStyle(fontSize: 14),
+                        decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.white,
+                            hintText: "username",
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10))),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      TextField(
+                        onChanged: (String value) {
+                          c.passwordRegister.value = value;
+                          c.checkFormForRegister();
+                        },
+                        controller: passwordControllerRegister,
+                        obscureText: true,
+                        style: TextStyle(fontSize: 14),
+                        decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.white,
+                            hintText: "password",
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10))),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      TextField(
+                        onChanged: (String value) {
+                          c.repasswordRegister.value = value;
+                          c.checkFormForRegister();
+                        },
+                        obscureText: true,
+                        controller: repasswordController,
+                        style: TextStyle(fontSize: 14),
+                        decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.white,
+                            hintText: "rePassword",
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10))),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Expanded(
+                          child: GestureDetector(
+                            onTap: c.isFormValidRegister.value
+                                ? () async {
+                             var recovery =  await c.register();
+                             if(recovery!=""){
+                               showSuccessDialog(recovery);
+                             }
+                             passwordControllerRegister.clear();
+                             userNameControllerRegister.clear();
+                             repasswordController.clear();
+                            }
+                                : null,
+                            child: Container(
+                              child: Center(
+                                  child: !c.isLoading.value
+                                      ? Text(
+                                    "Register",
+                                    style: TextStyle(
+                                        color: c.isFormValidRegister.value
+                                            ? Colors.white
+                                            : Colors.grey,
+                                        fontWeight: FontWeight.bold),
+                                  )
+                                      : SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                      ))),
+                              decoration: BoxDecoration(
+                                  color: Colors.black54,
+                                  borderRadius: BorderRadius.circular(10)),
+                            ),
+                          )),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      GestureDetector(
+                        onTap: (){
+                          c.isWantRegister.value = false;
+                        },
+                        child: Center(child: Text("or Sign In",
+                          style: TextStyle(color: Colors.white,
+                              decoration: TextDecoration.underline),)),
+                      ),
+                    ],
+                  );
+                }),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  getForgotPassBody() {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      elevation: 50,
+      color: Colors.black12,
+      child: Container(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 300,
+              height: 50,
+              decoration: BoxDecoration(
+                color: Color(0xff31313a),
+              ),
+              child: Center(
+                  child: Text(
+                    "ENTER YOUR NEW DETAILS",
+                    style: TextStyle(color: Colors.white),
+                  )),
+            ),
+            Container(
+              width: 300,
+              height: 400,
+              color: Color(0xff363740),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                child: Obx(() {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Image.asset(
+                        "assets/images/ic_admin.png",
+                        width: 100,
+                        height: 100,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      TextField(
+                        onChanged: (String value) {
+                          c.userNameForgot.value = value;
+                          c.checkFormForgot();
+                        },
+                        controller: forgotuserNameController,
+                        style: TextStyle(fontSize: 14),
+                        decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.white,
+                            hintText: "username",
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10))),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      TextField(
+                        onChanged: (String value) {
+                          c.passwordForgot.value = value;
+                          c.checkFormForgot();
+                        },
+                        controller: forgotpasswordController,
+                        obscureText: true,
+                        style: TextStyle(fontSize: 14),
+                        decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.white,
+                            hintText: "password",
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10))),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      TextField(
+                        onChanged: (String value) {
+                          c.recoveryForgot.value = value;
+                          c.checkFormForgot();
+                        },
+                        obscureText: true,
+                        controller: recoveryKeyController,
+                        style: TextStyle(fontSize: 14),
+                        decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.white,
+                            hintText: "recoveryKey",
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10))),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Expanded(
+                          child: GestureDetector(
+                            onTap: c.isFormValidForgot.value
+                                ? () async {
+                               await c.resetPassword();
+                               recoveryKeyController.clear();
+                               forgotuserNameController.clear();
+                               forgotpasswordController.clear();
+                            }
+                                : null,
+                            child: Container(
+                              child: Center(
+                                  child: !c.isLoading.value
+                                      ? Text(
+                                    "Reset",
+                                    style: TextStyle(
+                                        color: c.isFormValidForgot.value
+                                            ? Colors.white
+                                            : Colors.grey,
+                                        fontWeight: FontWeight.bold),
+                                  )
+                                      : SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                      ))),
+                              decoration: BoxDecoration(
+                                  color: Colors.black54,
+                                  borderRadius: BorderRadius.circular(10)),
+                            ),
+                          )),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      GestureDetector(
+                        onTap: (){
+                          c.isWantRegister.value = false;
+                          c.isWantForgot.value = false;
+                        },
+                        child: Center(child: Text("or Sign In",
+                          style: TextStyle(color: Colors.white,
+                              decoration: TextDecoration.underline),)),
+                      ),
+                    ],
+                  );
+                }),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
+  void showSuccessDialog(String recoveryId) {
+    Get.defaultDialog(
+        barrierDismissible: false,
+        title: "Admin Kaydınız Yapıldı", content: Column(
+      children: [
+        Text("Kurtarma numaranız aşağıda verilmiştir !"),
+
+        SizedBox(height: 5,),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(recoveryId.toString(), style: TextStyle(
+                color: Colors.black, fontWeight: FontWeight.bold),),
+            SizedBox(width: 20,),
+            ElevatedButton(onPressed: () async {
+              var modified = recoveryId.replaceAll('"', '');
+              await Clipboard.setData(ClipboardData(text: modified));
+              c.isWantRegister.value = false;
+              Navigator.pop(context);
+            },
+              child: Text("Copy"),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.black),)
+          ],),
+
+        SizedBox(height: 5,),
+        Text("Kopyaladıktan sonra devam edebilirsiniz !"),
+        SizedBox(height: 5,),
+      ],
+    ));
+  }
 }
 
 class TableData extends DataTableSource {
@@ -409,10 +807,9 @@ class TableData extends DataTableSource {
           String url = "/preview/$modified";
           print(url.toString());
           Get.toNamed(url);
-
         },),
         IconButton(icon: Icon(Icons.delete), onPressed: () {
-         c.deletePoll(polls?[index].sId ?? "");
+          c.deletePoll(polls?[index].sId ?? "");
         },),
       ],)),
     ]);
@@ -434,19 +831,23 @@ class TableData extends DataTableSource {
     var selectedPoll = polls?[index].userAnswers;
     Get.defaultDialog(
         barrierDismissible: true,
-        title: "Answer List",content: SingleChildScrollView(
-          child: Container(
-            width: 400,
-            height: 200,
-            child: ListView.builder(shrinkWrap: true,itemCount: polls?[index].userAnswers?.length,itemBuilder: (context , index){
-              return ListTile(trailing: IconButton(icon: Icon(Icons.remove_red_eye,),onPressed: (){
-
+        title: "Answer List", content: SingleChildScrollView(
+      child: Container(
+        width: 400,
+        height: 200,
+        child: ListView.builder(shrinkWrap: true,
+            itemCount: polls?[index].userAnswers?.length,
+            itemBuilder: (context, index) {
+              return ListTile(trailing: IconButton(
+                icon: Icon(Icons.remove_red_eye,), onPressed: () {
                 List<Answers>? list = selectedPoll?[index].answers;
-                Get.toNamed("/getAnswers",arguments:list);
-              },),title: Text(selectedPoll?[index].sId.toString() ?? ""),subtitle: Text(selectedPoll?[index].sId.toString() ?? ""),);
-                }),
-          ),
-        ));
+                Get.toNamed("/getAnswers", arguments: list);
+              },),
+                title: Text(selectedPoll?[index].sId.toString() ?? ""),
+                subtitle: Text(selectedPoll?[index].sId.toString() ?? ""),);
+            }),
+      ),
+    ));
   }
 }
 
