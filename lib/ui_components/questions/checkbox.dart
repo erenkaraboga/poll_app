@@ -78,6 +78,7 @@ class _CheckboxListState extends State<CheckboxList> {
                                 padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                                 child: ElevatedButton(
                                   onPressed: _addCheckbox,
+                                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
                                   child: Text('Add Checkbox'),
                                 ),
                               );

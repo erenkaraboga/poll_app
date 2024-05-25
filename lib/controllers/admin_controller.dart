@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cookie_jar/cookie_jar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,6 +19,7 @@ class AdminController extends GetxController {
   final selectedValue = Rxn<String?>();
   var isValidCreatePoll = false.obs;
   var visitorsCount = 0.0.obs;
+  var activeUsersCount = 0.0.obs;
   final box = GetStorage();
   var userName = "".obs;
   var password = "".obs;
@@ -45,6 +47,7 @@ class AdminController extends GetxController {
   var answeredUserCount = 0.0.obs;
   var pollsFiltered = <Polls>[].obs;
   var search = "".obs;
+  var csrfToken = "".obs;
 
   checkForm() {
     isFormValid.value = userName.isNotEmpty && password.isNotEmpty;
@@ -69,23 +72,57 @@ class AdminController extends GetxController {
 
   }
 
+  final cookieJar = CookieJar();
+
+  Future<void> getCsrfToken() async {
+    var url = "${AppConstants.BASEURL}/api/csrf-token";
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var cookies = response.headers['set-cookie'];
+      if (cookies != null) {
+        cookieJar.saveFromResponse(Uri.parse(url), [Cookie.fromSetCookieValue(cookies)]);
+      }
+
+      var json2 = json.decode(response.body);
+      csrfToken.value = json2["csrfToken"];
+      print('CSRF Token: ${csrfToken.value}');
+    } else {
+      print('Failed to get csrf token: ${response.reasonPhrase}');
+    }
+  }
+
   Future<bool> login() async {
     isLoading.value = true;
+
     await Future.delayed(Duration(seconds: 2));
+    //await getCsrfToken();
+
     final Map<String, String> credentials = {
       'userName': userName.value,
       'password': password.value,
     };
 
     var url = "${AppConstants.BASEURL}/api/adminLogin";
+    var cookies = await cookieJar.loadForRequest(Uri.parse(url));
+    var cookieHeader = cookies.map((cookie) => '${cookie.name}=${cookie.value}').join('; ');
 
     var response = await http.post(
       Uri.parse(url),
       headers: <String, String>{
+        'Accept': '*/*',
         'Content-Type': 'application/json; charset=UTF-8',
+        //'csrf-token': csrfToken.value,
+        //'Cookie': cookieHeader,
       },
       body: jsonEncode(credentials),
     );
+
     if (response.statusCode == 200) {
       showSnackBar(response);
       print('Login Success');
@@ -98,7 +135,7 @@ class AdminController extends GetxController {
       var model = AuthResponseModel.fromJson(json.decode(response.body));
       authResponseModel.value = model;
 
-      if(rememberMe.value){
+      if (rememberMe.value) {
         box.write("userName", authResponseModel.value.admin?.userName ?? "");
         box.write("id", authResponseModel.value.admin?.id ?? "");
       }
@@ -111,7 +148,7 @@ class AdminController extends GetxController {
       isLoading.value = false;
       isLogined.value = false;
       box.write("isLogined", false);
-      box.write("userName","");
+      box.write("userName", "");
       box.write("id", "");
       print('Failed to send Login: ${response.reasonPhrase}');
       return false;
@@ -264,6 +301,23 @@ class AdminController extends GetxController {
     if (response.statusCode == 200) {
       var jsonModel = json.decode(response.body);
       visitorsCount.value = jsonModel["count"].toDouble() ?? 0.0;
+      print(jsonModel["count"]);
+      print(response.body.toString());
+    } else {
+      print('Failed to send question: ${response.reasonPhrase}');
+    }
+  }
+  Future<void> getActiveUsers() async {
+    var url = "${AppConstants.BASEURL}/api/activeAdminCount";
+    var response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if (response.statusCode == 200) {
+      var jsonModel = json.decode(response.body);
+      activeUsersCount.value = jsonModel["activeAdminCount"].toDouble() ?? 0.0;
       print(jsonModel["count"]);
       print(response.body.toString());
     } else {

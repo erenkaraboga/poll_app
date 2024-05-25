@@ -97,14 +97,21 @@ class _CreatePollPageState extends State<CreatePollPage> {
                     Column(
                       children: [
                         dropdown(),
-                        ElevatedButton(onPressed: () {
+                        SizedBox(
+                          height: 10,
+                        ),
+                        ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                            onPressed: () {
                           getImage(ImageSource.gallery);
+
                         }, child: Text("Add image")),
                         SizedBox(
                           height: 10,
                         ),
                         Obx(() {
                           return ElevatedButton(
+                              style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
                               onPressed: c.isValidCreatePoll.value ? () async {
                                 var pollId = await c.sendQuestion();
                                 if (pollId != "") {

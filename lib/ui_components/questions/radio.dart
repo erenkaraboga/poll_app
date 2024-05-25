@@ -94,6 +94,7 @@ class _RadioButtonListState extends State<RadioButtonList> {
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                       onPressed: _addRadioButton,
                       child: Text('Add Radio Button'),
                     ),

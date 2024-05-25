@@ -42,6 +42,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
   void initState() {
     c.checkLogin();
     c.getVisitors();
+    c.getActiveUsers();
     super.initState();
   }
 
@@ -273,6 +274,33 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                     ),
                     Text(
                       "Visitor Count",
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Container(
+                    width: 1,
+                    color: Colors.grey.shade200,
+                  ),
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Countup(
+                      begin: 0,
+                      end: c.activeUsersCount.value,
+                      duration: Duration(milliseconds: 200),
+                      separator: ',',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Text(
+                      "Active Admin Count",
                       style: TextStyle(color: Colors.grey),
                     ),
                   ],

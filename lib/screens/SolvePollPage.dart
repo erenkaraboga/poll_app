@@ -110,7 +110,8 @@ class _SolvePollPageState extends State<SolvePollPage> {
                               height: 10,
                             ),
 
-                            ElevatedButton(onPressed: () async {
+                            ElevatedButton( style: ElevatedButton.styleFrom(backgroundColor: Colors.black),onPressed: () async {
+
                               await c.sendAnswer(
                                   c.pollResponseModel.value.id ?? "");
                             }, child:
