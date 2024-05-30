@@ -223,8 +223,6 @@ class PollController extends GetxController {
       else{
         return null;
       }
-
-
   }
 
 }

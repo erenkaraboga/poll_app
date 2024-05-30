@@ -42,7 +42,6 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
   void initState() {
     c.checkLogin();
     c.getVisitors();
-    c.getActiveUsers();
     super.initState();
   }
 

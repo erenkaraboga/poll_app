@@ -41,6 +41,12 @@ appRoutes() => [
     transitionDuration: Duration(milliseconds: 500),
   ),
   GetPage(
+    name: '/getAnswers:slug',
+    page: () => GetAnswersPage(),
+    middlewares: [RouteMiddleware()],
+    transitionDuration: Duration(milliseconds: 500),
+  ),
+  GetPage(
     name: '/getAnswers',
     page: () => GetAnswersPage(),
     middlewares: [RouteMiddleware()],

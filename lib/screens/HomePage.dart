@@ -196,10 +196,12 @@ class _HomePageState extends State<HomePage> {
                     return ListTile(trailing: IconButton(icon: Icon(
                       Icons.remove_red_eye,), onPressed: () {
                       List<Answers>? list = selectedPoll?.answers ?? [];
-                      Get.toNamed("/getAnswers",arguments:list);
+                      var url = "/getAnswers/${"cevap$index"}";
+                      print(url);
+                      Get.toNamed("/getAnswers/${"cevap$index"}",arguments:list);
                     },),
                       title: Text("Answer"),
-                      subtitle: Text(selectedPoll?.sId.toString() ?? ""),);
+                   );
                   }),
             ),
           )

@@ -136,34 +136,43 @@ class AdminController extends GetxController {
       authResponseModel.value = model;
 
       if (rememberMe.value) {
-        box.write("userName", authResponseModel.value.admin?.userName ?? "");
-        box.write("id", authResponseModel.value.admin?.id ?? "");
+        box.write("isRemember", true);
+      }else{
+        box.write("isRemember", false);
       }
+      box.write("userName", authResponseModel.value.admin?.userName ?? "");
+      box.write("id", authResponseModel.value.admin?.id ?? "");
+      box.write("token", authResponseModel.value.token ?? "");
       isLogined.value = true;
-
+       await  getActiveUsers();
       return true;
     } else {
       showSnackBar(response);
-
       isLoading.value = false;
       isLogined.value = false;
       box.write("isLogined", false);
       box.write("userName", "");
       box.write("id", "");
+      box.write("token", "");
       print('Failed to send Login: ${response.reasonPhrase}');
       return false;
     }
   }
 
-  checkLogin() {
-    if (box.read("userName") != null) {
-      if (box.read("userName") !="") {
-        isLogined.value = true;
-        authResponseModel.value = AuthResponseModel(admin: Admin(userName: box.read("userName"),id: box.read("id")));
+  checkLogin() async {
+    if(box.read("isRemember") == true){
+      if (box.read("userName") != null) {
+        if (box.read("userName") !="") {
+          isLogined.value = true;
+          authResponseModel.value = AuthResponseModel(token:box.read("token") ,admin: Admin(userName: box.read("userName"),id: box.read("id")));
+          await getActiveUsers();
+        } else {
+          isLogined.value = false;
+        }
       } else {
         isLogined.value = false;
       }
-    } else {
+    }else{
       isLogined.value = false;
     }
   }
@@ -172,6 +181,7 @@ class AdminController extends GetxController {
     box.write("isLogined", false);
     box.write("userName","");
     box.write("id", "");
+    box.write("isRemember", false);
     rememberMe.value = false;
     authResponseModel.value = AuthResponseModel();
   }
@@ -272,11 +282,13 @@ class AdminController extends GetxController {
   }
 
   Future<String> deletePoll(String pollId) async {
+    var token = authResponseModel.value.token;
     var url = "${AppConstants.BASEURL}/api/poll/$pollId";
     var response = await http.delete(
       Uri.parse(url),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': token.toString(),
       },
     );
     if (response.statusCode == 200) {
@@ -291,11 +303,13 @@ class AdminController extends GetxController {
   }
 
   Future<void> getVisitors() async {
+    var token = authResponseModel.value.token;
     var url = "${AppConstants.BASEURL}/api/getVisitor";
     var response = await http.get(
       Uri.parse(url),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': token.toString(),
       },
     );
     if (response.statusCode == 200) {
@@ -308,11 +322,13 @@ class AdminController extends GetxController {
     }
   }
   Future<void> getActiveUsers() async {
+    var token = authResponseModel.value.token;
     var url = "${AppConstants.BASEURL}/api/activeAdminCount";
     var response = await http.get(
       Uri.parse(url),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': token.toString(),
       },
     );
     if (response.statusCode == 200) {
