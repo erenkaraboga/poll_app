@@ -1,4 +1,5 @@
 import 'package:animated_flip_counter/animated_flip_counter.dart';
+import 'package:avatar_glow/avatar_glow.dart';
 import 'package:countup/countup.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +42,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
   @override
   void initState() {
     c.checkLogin();
-    c.getVisitors();
+
     super.initState();
   }
 
@@ -287,17 +288,26 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Countup(
-                      begin: 0,
-                      end: c.activeUsersCount.value,
-                      duration: Duration(milliseconds: 200),
-                      separator: ',',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 30,
-                        color: Colors.black,
+                    AvatarGlow(
+                      glowRadiusFactor: 2,
+                      glowCount: 2,
+                      duration: Duration(seconds: 2),
+                      glowColor: Colors.green,
+                      child:Countup(
+                        begin: 0,
+                        end: c.activeUsersCount.value,
+                        duration: Duration(milliseconds: 200),
+                        separator: ',',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 30,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
+
+
+
                     Text(
                       "Active Admin Count",
                       style: TextStyle(color: Colors.grey),

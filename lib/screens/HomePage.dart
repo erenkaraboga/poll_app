@@ -5,6 +5,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
@@ -137,9 +138,7 @@ class _HomePageState extends State<HomePage> {
                       return Builder(
                         builder: (BuildContext context) {
                           return Container(
-
                               width: MediaQuery.of(context).size.width,
-
                               decoration: BoxDecoration(
                               ),
                               child: Image.network(i));
@@ -150,7 +149,12 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 SizedBox(height: 50,),
-
+                GestureDetector(
+                    onTap: (){
+                      Get.defaultDialog(content: Image.asset("assets/images/sitemap.png",),title: "");
+                    },
+                    child: Text("Site Map",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),)),
+                SizedBox(height: 50,),
               ],
             );
           }
@@ -196,9 +200,9 @@ class _HomePageState extends State<HomePage> {
                     return ListTile(trailing: IconButton(icon: Icon(
                       Icons.remove_red_eye,), onPressed: () {
                       List<Answers>? list = selectedPoll?.answers ?? [];
-                      var url = "/getAnswers/${"cevap$index"}";
+                      var url = "/getAnswers/${"anket-cevabı-${index+1}"}";
                       print(url);
-                      Get.toNamed("/getAnswers/${"cevap$index"}",arguments:list);
+                      Get.toNamed(url,arguments:list);
                     },),
                       title: Text("Answer"),
                    );

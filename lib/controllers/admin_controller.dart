@@ -145,6 +145,7 @@ class AdminController extends GetxController {
       box.write("token", authResponseModel.value.token ?? "");
       isLogined.value = true;
        await  getActiveUsers();
+       await  getVisitors();
       return true;
     } else {
       showSnackBar(response);
@@ -166,6 +167,7 @@ class AdminController extends GetxController {
           isLogined.value = true;
           authResponseModel.value = AuthResponseModel(token:box.read("token") ,admin: Admin(userName: box.read("userName"),id: box.read("id")));
           await getActiveUsers();
+          await getVisitors();
         } else {
           isLogined.value = false;
         }

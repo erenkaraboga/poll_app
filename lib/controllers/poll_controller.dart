@@ -182,13 +182,11 @@ class PollController extends GetxController {
   }
 
 
-
-
   showSnackBar(http.Response response){
     Get.showSnackbar(
       GetSnackBar(
         title: response.body.toString(),
-        message: 'Anket Başarıyla Oluşturuldu',
+        message: 'İşlem Başarılı',
         icon: const Icon(Icons.add),
         duration: const Duration(seconds: 3),
         mainButton: TextButton(
