@@ -13,6 +13,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
 import 'package:poll_app/controllers/homeController.dart';
 import 'package:poll_app/controllers/poll_controller.dart';
+import 'package:poll_app/utils/slugify.dart';
 
 import '../models/PollResponseModel.dart';
 
@@ -200,7 +201,8 @@ class _HomePageState extends State<HomePage> {
                     return ListTile(trailing: IconButton(icon: Icon(
                       Icons.remove_red_eye,), onPressed: () {
                       List<Answers>? list = selectedPoll?.answers ?? [];
-                      var url = "/getAnswers/${"anket-cevabı-${index+1}"}";
+                      var name = slugify(selectedPoll?.answers?[0].title ??"");
+                      var url = "/getAnswers/${name}";
                       print(url);
                       Get.toNamed(url,arguments:list);
                     },),
